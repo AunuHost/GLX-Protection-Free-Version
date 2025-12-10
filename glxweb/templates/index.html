@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>GLX Protection Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+:root {
+  --bg: #050816;
+  --bg-alt: #0b1020;
+  --card: #111827;
+  --accent: #38bdf8;
+  --accent-soft: rgba(56,189,248,0.12);
+  --danger: #ef4444;
+  --success: #22c55e;
+  --border: #1f2937;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --radius: 16px;
+  --shadow-soft: 0 18px 45px rgba(15,23,42,0.75);
+  --shadow-card: 0 18px 40px rgba(15,23,42,0.9);
+  --transition-fast: 0.18s ease-out;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #0f172a 0, #020617 40%, #000 100%);
+  color: var(--text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+.main-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 2.2fr);
+  width: min(1200px, 100%);
+  padding: 32px 18px;
+  gap: 22px;
+}
+@media (max-width: 900px) {
+  .main-shell {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 20px 14px;
+  }
+}
+.card {
+  background: radial-gradient(circle at top left, rgba(56,189,248,0.10), transparent 55%),
+              linear-gradient(145deg, rgba(15,23,42,0.98), rgba(3,7,18,0.98));
+  border-radius: var(--radius);
+  border: 1px solid rgba(15,23,42,0.9);
+  box-shadow: var(--shadow-card);
+  padding: 22px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(56,189,248,0.07), transparent 60%);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  pointer-events: none;
+}
+.card:hover::before {
+  opacity: 1;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.logo-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.logo-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: conic-gradient(from 210deg, #22c55e, #38bdf8, #eab308, #22c55e);
+  padding: 1px;
+}
+.logo-circle-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: radial-gradient(circle at 30% 20%, #22c55e, #0f172a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 18px;
+  color: #e5e7eb;
+}
+.logo-text-main {
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  font-size: 15px;
+}
+.logo-text-sub {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+}
+.badge {
+  border-radius: 999px;
+  border: 1px solid rgba(56,189,248,0.45);
+  background: rgba(8,47,73,0.85);
+  padding: 5px 10px;
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #e0f2fe;
+}
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--success);
+  box-shadow: 0 0 0 4px rgba(34,197,94,0.28);
+}
+.login-title {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+.login-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.field-label {
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+}
+.field-label span {
+  font-weight: 500;
+  color: var(--text);
+}
+input[type="text"],
+input[type="password"] {
+  background: radial-gradient(circle at top, #020617, #020617);
+  border-radius: 999px;
+  border: 1px solid rgba(31,41,55,0.9);
+  padding: 9px 12px;
+  outline: none;
+  font-size: 13px;
+  color: var(--text);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
+}
+input[type="text"]::placeholder,
+input[type="password"]::placeholder {
+  color: #6b7280;
+}
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(56,189,248,0.4);
+  background: radial-gradient(circle at top, #020617, #020617);
+  transform: translateY(-0.5px);
+}
+.button-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+.btn-main {
+  border-radius: 999px;
+  border: none;
+  padding: 9px 18px;
+  background: linear-gradient(135deg, #38bdf8, #22c55e);
+  color: #0b1120;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 14px 30px rgba(45,212,191,0.4);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+}
+.btn-main span.icon {
+  font-size: 16px;
+}
+.btn-main:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 18px 38px rgba(45,212,191,0.55);
+}
+.btn-main:active {
+  transform: translateY(0);
+  box-shadow: 0 10px 22px rgba(45,212,191,0.4);
+}
+.btn-ghost {
+  border-radius: 999px;
+  border: 1px solid rgba(55,65,81,0.9);
+  padding: 8px 14px;
+  background: rgba(15,23,42,0.8);
+  color: var(--muted);
+  font-size: 11px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: border-color var(--transition-fast), background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+.btn-ghost:hover {
+  border-color: rgba(148,163,184,0.9);
+  background: rgba(15,23,42,1);
+  color: var(--text);
+  transform: translateY(-0.5px);
+}
+.btn-ghost span.icon {
+  font-size: 14px;
+}
+.helper-text {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.helper-text strong {
+  color: #e5e7eb;
+}
+.creator-credit {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 18px;
+  border-top: 1px solid rgba(31,41,55,0.9);
+  padding-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.creator-pill {
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: rgba(8,47,73,0.9);
+  border: 1px solid rgba(56,189,248,0.45);
+  font-size: 11px;
+}
+.creator-pill span {
+  font-weight: 600;
+  color: #e0f2fe;
+}
+.time-info {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: right;
+}
+.time-info div {
+  line-height: 1.35;
+}
+.dashboard-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 4px;
+}
+@media (max-width: 900px) {
+  .status-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.status-card {
+  background: linear-gradient(145deg, #020617, #020617);
+  border-radius: 14px;
+  padding: 12px 12px 10px;
+  border: 1px solid rgba(31,41,55,0.95);
+  box-shadow: 0 8px 18px rgba(15,23,42,0.8);
+  position: relative;
+  overflow: hidden;
+}
+.status-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(56,189,248,0.16), transparent 65%);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+.status-card:hover::after {
+  opacity: 1;
+}
+.status-label {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.status-value {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.status-sub {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  margin-right: 6px;
+  display: inline-block;
+}
+.status-dot.success {
+  background: var(--success);
+  box-shadow: 0 0 0 4px rgba(34,197,94,0.2);
+}
+.status-dot.danger {
+  background: var(--danger);
+  box-shadow: 0 0 0 4px rgba(239,68,68,0.25);
+}
+.status-dot.idle {
+  background: #eab308;
+  box-shadow: 0 0 0 4px rgba(234,179,8,0.2);
+}
+.section-title {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  margin-bottom: 8px;
+}
+.features-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 900px) {
+  .features-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.feature-toggle {
+  border-radius: 999px;
+  border: 1px solid rgba(31,41,55,0.9);
+  background: rgba(15,23,42,0.95);
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.toggle-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.toggle-label span.name {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text);
+}
+.toggle-label span.desc {
+  font-size: 10px;
+}
+.toggle-switch {
+  width: 34px;
+  height: 18px;
+  border-radius: 999px;
+  background: #111827;
+  border: 1px solid rgba(55,65,81,1);
+  position: relative;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.toggle-switch::before {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  top: 1px;
+  left: 1px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+.toggle-switch[data-state="on"] {
+  background: linear-gradient(135deg, #22c55e, #38bdf8);
+  border-color: transparent;
+}
+.toggle-switch[data-state="on"]::before {
+  transform: translateX(14px);
+  background: #0b1120;
+}
+.traffic-card {
+  margin-top: 4px;
+  border-radius: 14px;
+  background: radial-gradient(circle at top left, rgba(56,189,248,0.1), transparent 60%),
+              linear-gradient(145deg, #020617, #020617);
+  border: 1px solid rgba(31,41,55,0.95);
+  padding: 12px 12px 10px;
+  box-shadow: 0 10px 24px rgba(15,23,42,0.95);
+}
+.traffic-meta {
+  font-size: 10px;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.traffic-meta span {
+  white-space: nowrap;
+}
+#trafficChart {
+  width: 100%;
+  height: 150px;
+}
+.server-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4px;
+  font-size: 11px;
+}
+.server-table th,
+.server-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(31,41,55,0.8);
+}
+.server-table th {
+  text-align: left;
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.server-table tbody tr:hover {
+  background: rgba(15,23,42,0.9);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 10px;
+}
+.chip-soft {
+  background: rgba(15,23,42,0.9);
+  border: 1px solid rgba(55,65,81,0.9);
+  color: var(--muted);
+}
+.chip-danger {
+  background: rgba(127,29,29,0.95);
+  border: 1px solid rgba(239,68,68,0.9);
+  color: #fee2e2;
+}
+.chip-admin {
+  background: rgba(8,47,73,0.95);
+  border: 1px solid rgba(56,189,248,0.9);
+  color: #e0f2fe;
+}
+.small-muted {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+#lockedOverlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+}
+.locked-toast {
+  background: rgba(127,29,29,0.95);
+  border-radius: 999px;
+  border: 1px solid rgba(248,113,113,0.95);
+  color: #fee2e2;
+  padding: 6px 12px;
+  font-size: 11px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+}
+.locked-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+.admin-panel {
+  border-radius: 14px;
+  background: radial-gradient(circle at top right, rgba(56,189,248,0.12), transparent 60%),
+              linear-gradient(145deg, #020617, #020617);
+  border: 1px solid rgba(30,64,175,0.85);
+  box-shadow: 0 10px 28px rgba(30,64,175,0.9);
+  padding: 12px 12px 10px;
+  margin-top: 6px;
+}
+.admin-title {
+  font-size: 11px;
+  color: #bfdbfe;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  margin-bottom: 6px;
+}
+.admin-note {
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.badge-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="main-shell">
+  <div class="card">
+    <div class="card-header">
+      <div class="logo-pill">
+        <div class="logo-circle">
+          <div class="logo-circle-inner">GLX</div>
+        </div>
+        <div>
+          <div class="logo-text-main">GLX Protection</div>
+          <div class="logo-text-sub">DISCORD SECURITY LAYER</div>
+        </div>
+      </div>
+      <div class="badge-right">
+        <div class="badge">
+          <span class="badge-dot"></span>
+          <span>Realtime Dashboard</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="login-title">Two-Factor Secure Login</div>
+    <div class="login-sub">
+      Sign in with an <strong>Access Code</strong> and a <strong>6-digit PIN</strong> generated directly from the GLX bot on Discord.
+      The dashboard only reads data from the bot process that is currently online.
+    </div>
+
+    <form id="loginForm" autocomplete="off">
+      <div class="field-group">
+        <div class="field-label">
+          <span>Access Code</span>
+          <span>Format: GLX-XXXX-YYYY</span>
+        </div>
+        <input id="codeInput" type="text" placeholder="Enter code generated by !generate or !genadmin" />
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">
+          <span>Two-Factor PIN</span>
+          <span>6 digits</span>
+        </div>
+        <input id="pinInput" type="password" maxlength="6" placeholder="Enter your 6-digit PIN" />
+      </div>
+
+      <div class="button-row">
+        <button type="submit" class="btn-main">
+          <span class="icon">⮕</span>
+          <span>Connect Dashboard</span>
+        </button>
+        <button type="button" class="btn-ghost" id="docsHintBtn">
+          <span class="icon">?</span>
+          <span>How to generate a code</span>
+        </button>
+      </div>
+
+      <div class="helper-text" id="helperText">
+        In Discord, use <strong>!generate</strong> (user key, scoped to that server) as an administrator,
+        or <strong>!genadmin</strong> (admin key, global) as the configured OWNER_ID in the bot <code>.env</code>.
+      </div>
+    </form>
+
+    <div class="creator-credit">
+      <div class="creator-pill">
+        Credit: <span>AunuXdev</span> as <span>Creator / Developer</span>
+      </div>
+      <div class="time-info" id="timeInfo">
+        <div>UTC: —</div>
+        <div>Asia/Jakarta: —</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-shell">
+    <div class="card">
+      <div class="section-title">Overview</div>
+      <div class="status-grid">
+        <div class="status-card">
+          <div class="status-label">Bot Status</div>
+          <div class="status-value" id="statusGuilds">—</div>
+          <div class="status-sub">
+            <span class="status-dot success" id="statusDot"></span>
+            <span id="statusSubtitle">Waiting for connection…</span>
+          </div>
+        </div>
+        <div class="status-card">
+          <div class="status-label">Messages Processed</div>
+          <div class="status-value" id="statusMessages">—</div>
+          <div class="status-sub">Total messages scanned by GLX</div>
+        </div>
+        <div class="status-card">
+          <div class="status-label">Security Actions</div>
+          <div class="status-value" id="statusActions">—</div>
+          <div class="status-sub">Timeouts + bans + kicks + nukes</div>
+        </div>
+      </div>
+
+      <div class="section-title">Features</div>
+      <div class="features-row">
+        <div class="feature-toggle">
+          <div class="toggle-label">
+            <span class="name">Anti-Spam</span>
+            <span class="desc">Detects spam and message floods</span>
+          </div>
+          <div class="toggle-switch" data-key="anti_spam" data-state="off"></div>
+        </div>
+        <div class="feature-toggle">
+          <div class="toggle-label">
+            <span class="name">Anti-Raid</span>
+            <span class="desc">Lockdown when mass joins are detected</span>
+          </div>
+          <div class="toggle-switch" data-key="anti_raid" data-state="off"></div>
+        </div>
+        <div class="feature-toggle">
+          <div class="toggle-label">
+            <span class="name">AutoMod Sync</span>
+            <span class="desc">Syncs GLX rules to Discord AutoMod</span>
+          </div>
+          <div class="toggle-switch" data-key="automod" data-state="off"></div>
+        </div>
+        <div class="feature-toggle">
+          <div class="toggle-label">
+            <span class="name">Anti-Invites</span>
+            <span class="desc">Blocks Discord invite links</span>
+          </div>
+          <div class="toggle-switch" data-key="anti_invites" data-state="off"></div>
+        </div>
+        <div class="feature-toggle">
+          <div class="toggle-label">
+            <span class="name">Anti-Mentions</span>
+            <span class="desc">Prevents mass mention abuse</span>
+          </div>
+          <div class="toggle-switch" data-key="anti_mentions" data-state="off"></div>
+        </div>
+        <div class="feature-toggle">
+          <div class="toggle-label">
+            <span class="name">Nuke Command</span>
+            <span class="desc">Hard reset a channel by cloning</span>
+          </div>
+          <div class="toggle-switch" data-key="nuke" data-state="off"></div>
+        </div>
+      </div>
+      <div class="small-muted">
+        Toggling these switches updates the live runtime configuration of the bot process that is currently running.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Traffic / Activity</div>
+      <div class="traffic-card">
+        <div class="traffic-meta">
+          <span id="trafficRange">Window: —</span>
+          <span id="trafficZone">Time zones: UTC and Asia/Jakarta (UTC+7)</span>
+        </div>
+        <canvas id="trafficChart"></canvas>
+      </div>
+      <div class="small-muted">
+        The chart shows message activity scanned by GLX in the last 5 minutes, sampled in real time.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Servers / License</div>
+      <table class="server-table" id="serverTable">
+        <thead>
+          <tr>
+            <th>Server</th>
+            <th>Members</th>
+            <th>Bots</th>
+            <th>Scope</th>
+            <th>Admin Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="5" style="text-align:center; color:#6b7280;">Not connected to the bot or not logged in yet.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="small-muted" id="licenseInfo">
+        License: none yet. Use <code>!generate</code> for user keys or <code>!genadmin</code> for admin keys in Discord.
+      </div>
+
+      <div id="adminPanel" class="admin-panel" style="display:none;">
+        <div class="admin-title">Admin Panel (Bot Owner)</div>
+        <div class="admin-note">
+          You are logged in with an <strong>ADMIN KEY</strong>. This panel is only visible for the user whose ID matches
+          <strong>GLX_OWNER_ID</strong> in the <code>.env</code> file. From here you can remotely disconnect the bot from specific servers
+          and force a global AutoMod sync.
+        </div>
+        <button class="btn-ghost" id="syncAutomodBtn">
+          <span class="icon">↻</span>
+          <span>Force AutoMod sync for all servers</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="lockedOverlay">
+  <div class="locked-toast" id="lockedToast">
+    <span>⚠</span>
+    <span>Invalid Access Code or PIN. Make sure you are using the latest code generated by the GLX bot.</span>
+  </div>
+</div>
+
+<script>
+const codeInput = document.getElementById("codeInput");
+const pinInput = document.getElementById("pinInput");
+const loginForm = document.getElementById("loginForm");
+const helperText = document.getElementById("helperText");
+const docsHintBtn = document.getElementById("docsHintBtn");
+const timeInfo = document.getElementById("timeInfo");
+const statusGuilds = document.getElementById("statusGuilds");
+const statusMessages = document.getElementById("statusMessages");
+const statusActions = document.getElementById("statusActions");
+const statusDot = document.getElementById("statusDot");
+const statusSubtitle = document.getElementById("statusSubtitle");
+const trafficRange = document.getElementById("trafficRange");
+const trafficChartCanvas = document.getElementById("trafficChart");
+const serverTableBody = document.querySelector("#serverTable tbody");
+const licenseInfo = document.getElementById("licenseInfo");
+const adminPanel = document.getElementById("adminPanel");
+const syncAutomodBtn = document.getElementById("syncAutomodBtn");
+const lockedToast = document.getElementById("lockedToast");
+
+let currentKey = "";
+let currentPin = "";
+let trafficChart = null;
+let pollTimer = null;
+
+docsHintBtn.addEventListener("click", () => {
+  helperText.innerHTML =
+    "In Discord, as a server administrator, run <strong>!generate</strong> to create a user key bound to that server.<br>" +
+    "As the bot owner (ID equals <code>GLX_OWNER_ID</code>), run <strong>!genadmin</strong> to create a global admin key.";
+});
+
+function showLockedToast() {
+  lockedToast.classList.add("show");
+  setTimeout(() => lockedToast.classList.remove("show"), 2600);
+}
+
+async function fetchStats() {
+  if (!currentKey || !currentPin) return;
+  try {
+    const res = await fetch(`/api/stats?key=${encodeURIComponent(currentKey)}&pin=${encodeURIComponent(currentPin)}`);
+    if (!res.ok) {
+      showLockedToast();
+      return;
+    }
+    const data = await res.json();
+    if (data.locked) {
+      showLockedToast();
+      return;
+    }
+    applyStats(data);
+  } catch (e) {
+    console.error("Failed to fetch stats", e);
+  }
+}
+
+function sumSecurityActions(stats) {
+  return (stats.timeouts || 0) + (stats.bans || 0) + (stats.kicks || 0) + (stats.nukes || 0);
+}
+
+function humanNumber(num) {
+  if (num == null) return "0";
+  if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+  if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+  return String(num);
+}
+
+function applyStats(data) {
+  const guilds = data.guilds || (data.guilds_detail ? data.guilds_detail.length : 0);
+  statusGuilds.textContent = guilds || 0;
+  statusMessages.textContent = humanNumber((data.stats && data.stats.messages_seen) || 0);
+  statusActions.textContent = humanNumber(sumSecurityActions(data.stats || {}));
+
+  timeInfo.innerHTML = `<div>${data.time_utc || "UTC: —"}</div><div>${data.time_jakarta || ""}</div>`;
+
+  statusDot.className = "status-dot " + (guilds > 0 ? "success" : "danger");
+  statusSubtitle.textContent = guilds > 0
+    ? `Bot online and active in ${guilds} server(s).`
+    : "No servers detected or bot is offline.";
+
+  document.querySelectorAll(".toggle-switch").forEach(el => {
+    const key = el.dataset.key;
+    const value = data.features && data.features[key];
+    const on = !!value;
+    el.dataset.state = on ? "on" : "off";
+  });
+
+  const t = data.traffic || {};
+  if (t.labels && t.labels.length && trafficChartCanvas.getContext) {
+    const ctx = trafficChartCanvas.getContext("2d");
+    if (!trafficChart) {
+      trafficChart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: t.labels,
+          datasets: [{
+            label: "Messages scanned",
+            data: t.counts,
+            tension: 0.25,
+            borderWidth: 1.6,
+            pointRadius: 0,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { maxTicksLimit: 6, color: "#6b7280", font: { size: 9 } }
+            },
+            y: {
+              grid: { color: "rgba(31,41,55,0.85)" },
+              ticks: { color: "#6b7280", font: { size: 9 }, precision: 0 }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    } else {
+      trafficChart.data.labels = t.labels;
+      trafficChart.data.datasets[0].data = t.counts;
+      trafficChart.update();
+    }
+    trafficRange.textContent = `Window: ${t.window_start_jakarta || "-"}  →  ${t.window_end_jakarta || "-"}`;
+  } else {
+    trafficRange.textContent = "Window: no recent activity detected (bot idle).";
+  }
+
+  const list = data.guilds_detail || [];
+  serverTableBody.innerHTML = "";
+  if (!list.length) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 5;
+    td.style.textAlign = "center";
+    td.style.color = "#6b7280";
+    td.textContent = "No servers connected.";
+    tr.appendChild(td);
+    serverTableBody.appendChild(tr);
+  } else {
+    list.forEach(g => {
+      const tr = document.createElement("tr");
+      const tdName = document.createElement("td");
+      tdName.textContent = g.name || `#${g.id}`;
+      const tdMembers = document.createElement("td");
+      tdMembers.textContent = humanNumber(g.members || 0);
+      const tdBots = document.createElement("td");
+      tdBots.textContent = humanNumber(g.bots || 0);
+      const tdScope = document.createElement("td");
+      const chip = document.createElement("span");
+      chip.className = "chip chip-soft";
+      chip.textContent = data.role === "admin" ? "Admin scope" : "Server scope";
+      tdScope.appendChild(chip);
+      const tdAct = document.createElement("td");
+      if (data.role === "admin") {
+        const btn = document.createElement("button");
+        btn.className = "chip chip-danger";
+        btn.textContent = "Force Leave";
+        btn.addEventListener("click", () => forceLeaveGuild(g.id));
+        tdAct.appendChild(btn);
+      } else {
+        tdAct.textContent = "-";
+      }
+      tr.appendChild(tdName);
+      tr.appendChild(tdMembers);
+      tr.appendChild(tdBots);
+      tr.appendChild(tdScope);
+      tr.appendChild(tdAct);
+      serverTableBody.appendChild(tr);
+    });
+  }
+
+  const lic = data.license || {};
+  let line = `License: ${lic.type || "Unknown"}`;
+  if (lic.code_masked) line += ` • Keys: ${lic.code_masked}`;
+  if (lic.created_ago) line += ` • generated ${lic.created_ago} ago`;
+  if (lic.created_by) line += ` • last created by ${lic.created_by}`;
+  licenseInfo.textContent = line;
+
+  if (data.role === "admin") {
+    adminPanel.style.display = "block";
+  } else {
+    adminPanel.style.display = "none";
+  }
+}
+
+async function forceLeaveGuild(guildId) {
+  if (!currentKey || !currentPin) return;
+  if (!confirm("Are you sure you want to remove the bot from this server?")) return;
+  try {
+    const res = await fetch(`/api/admin/leave_guild?key=${encodeURIComponent(currentKey)}&pin=${encodeURIComponent(currentPin)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ guild_id: guildId })
+    });
+    const body = await res.json();
+    if (!res.ok || !body.ok) {
+      alert("Failed to remove the bot from that server. Check the bot logs for details.");
+      return;
+    }
+    alert("The bot has left the selected server.");
+    fetchStats();
+  } catch (e) {
+    console.error(e);
+    alert("Failed to contact the dashboard backend.");
+  }
+}
+
+document.querySelectorAll(".toggle-switch").forEach(el => {
+  el.addEventListener("click", async () => {
+    if (!currentKey || !currentPin) {
+      showLockedToast();
+      return;
+    }
+    const key = el.dataset.key;
+    const newState = el.dataset.state === "on" ? "off" : "on";
+    el.dataset.state = newState;
+    try {
+      const res = await fetch(`/api/toggle?key=${encodeURIComponent(currentKey)}&pin=${encodeURIComponent(currentPin)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key, value: newState === "on" })
+      });
+      if (!res.ok) {
+        showLockedToast();
+        fetchStats();
+      }
+    } catch (e) {
+      console.error(e);
+      fetchStats();
+    }
+  });
+});
+
+if (syncAutomodBtn) {
+  syncAutomodBtn.addEventListener("click", async () => {
+    if (!currentKey || !currentPin) {
+      showLockedToast();
+      return;
+    }
+    if (!confirm("Run AutoMod sync for all servers now?")) return;
+    try {
+      const res = await fetch(`/api/sync_automod?key=${encodeURIComponent(currentKey)}&pin=${encodeURIComponent(currentPin)}`, {
+        method: "POST"
+      });
+      const body = await res.json();
+      if (!res.ok || !body.ok) {
+        alert("Failed to run AutoMod sync. Check bot logs for details.");
+      } else {
+        alert("AutoMod sync request has been sent to all servers.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Failed to reach the dashboard backend.");
+    }
+  });
+}
+
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  currentKey = (codeInput.value || "").trim();
+  currentPin = (pinInput.value || "").trim();
+  if (!currentKey || !currentPin) {
+    showLockedToast();
+    return;
+  }
+  await fetchStats();
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(fetchStats, 7000);
+});
+</script>
+</body>
+</html>
